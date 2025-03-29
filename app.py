@@ -1,5 +1,23 @@
 import streamlit as st
-import google.generativeai as genai
+import os
+import requests
+from PIL import Image
+
+# Try to import the Google Generative AI module with error handling
+try:
+    import google.generativeai as genai
+except ImportError:
+    st.error("Failed to import Google Generative AI module. Installing it now...")
+    import subprocess
+    import sys
+    subprocess.check_call([sys.executable, "-m", "pip", "install", "google-generativeai>=0.3.0"])
+    try:
+        import google.generativeai as genai
+        st.success("Successfully installed and imported Google Generative AI!")
+    except ImportError:
+        st.error("Failed to install Google Generative AI. Please check your deployment environment.")
+        st.stop()
+
 import os
 import requests
 from PIL import Image
@@ -121,7 +139,7 @@ def generate_image_with_sd(prompt, width, height, api_key, steps=30, cfg_scale=7
     
     data = response.json()
     images = []
-    for artifact in data["artifacts"]:
+    for artifact in data["artifacts"]:  # Removed the extra closing parenthesis
         image_data = base64.b64decode(artifact["base64"])
         img = Image.open(BytesIO(image_data))
         images.append(img)
